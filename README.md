@@ -1,5 +1,5 @@
 # Intoduction
-RsyncHero is ennhanced backup solution, It works on developing, speeding and optimizing the backup process using Rsync.
+RsyncHero is an ennhanced backup solution for Linux machines, It works on developing, speeding and optimizing the backup process using Rsync.
 
 # Requirements
 - Python3
