@@ -18,19 +18,19 @@ RsyncHero is a threaded backup solution, It works on speeding and optimizing the
 - SSH-Keys between backup server and clients
 
 ## How-To
-1. Setup SSH-Key between the backup server and the clients.
+- Setup SSH-Key between the backup server and the clients.
 ```
 [root@BACKUPSERVER ~]# ssh-copy-id root@$CLIENTIP
 ```
-2. Clone this repo and modify `vary.py` file with your preferred paths to backup.
-3. Go to rsynchero_web and initiate the database.
+- Clone this repo and modify `vary.py` file with your preferred paths to backup.
+- Go to rsynchero_web and initiate the database.
 ```
 cd rsynchero_web
 python3 manage.py makemigrations
 python3 manage.py migrate
 python3 manage.py createsuperuser
 ```
-4. Run the django server from the same directory and define your prefered IP and Port to bind on. 
+- Run the django server from the same directory and define your prefered IP and Port to bind on. 
 Ex. to bind on all networks and port 8000
 ```
 python3 manage.py runserver 0.0.0.0:8000
@@ -39,6 +39,6 @@ And for local network
 ```
 python3 manage.py runserver
 ```
-4. Enter the backup server IP and port in the brower add the clients from the web console.
-5. Execute `main.py` from the ROOT dir and enjoy!
-6. Do not forget to play around with your cron.
+- Enter the backup server IP and port in the brower add the clients from the web console.
+- Execute `main.py` from the ROOT dir and enjoy!
+- Do not forget to play around with your cron.
