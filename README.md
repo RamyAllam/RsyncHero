@@ -3,9 +3,13 @@ RsyncHero is a threaded backup solution, It works on speeding and optimizing the
 
 
 ## ScreenShots
+#### Home
 ![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/home.png)
-![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/serveradd.png)
+#### Client Control
 ![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/servercontrol.png)
+#### Client Add
+![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/serveradd.png)
+#### Client Edit
 ![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/serveredit.png)
 
 ## Requirements
@@ -17,7 +21,7 @@ RsyncHero is a threaded backup solution, It works on speeding and optimizing the
 1. Setup SSH-Key between the backup server and the clients.
 ```
 [root@BACKUPSERVER ~]# ssh-copy-id root@$CLIENTIP
-```
+```https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/serveradd.png
 2. Clone this repo and modify `vary.py` file with your prefered paths to backup.
 3. Go to rsynchero_web and initiate the database.
 ```
