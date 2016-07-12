@@ -3,10 +3,10 @@ RsyncHero is a threaded backup solution, It works on speeding and optimizing the
 
 
 ## ScreenShots
-![](https://github.com/RamyAllam/RsyncHero/rsynchero_web/screenshots/home.png)
-![](https://github.com/RamyAllam/RsyncHero/rsynchero_web/screenshots/home.png)
-![](https://github.com/RamyAllam/RsyncHero/rsynchero_web/screenshots/home.png)
-![](https://github.com/RamyAllam/RsyncHero/rsynchero_web/screenshots/home.png)
+![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/home.png)
+![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/serveradd.png)
+![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/servercontrol.png)
+![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/serveredit.png)
 
 ## Requirements
 - Python3 with SQLite enabled
