@@ -22,7 +22,7 @@ RsyncHero is a threaded backup solution, It works on speeding and optimizing the
 ```
 [root@BACKUPSERVER ~]# ssh-copy-id root@$CLIENTIP
 ```
-2. Clone this repo and modify `vary.py` file with your prefered paths to backup.
+2. Clone this repo and modify `vary.py` file with your preferred paths to backup.
 3. Go to rsynchero_web and initiate the database.
 ```
 cd rsynchero_web
