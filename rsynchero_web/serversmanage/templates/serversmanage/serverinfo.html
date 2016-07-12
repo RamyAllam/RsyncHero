@@ -1,0 +1,41 @@
+{% extends 'serversmanage/base.html' %}
+
+{% block body %}
+    <div class="container">
+        <table class="table table-bordered table-striped">
+            <tr>
+                <th class="info" width="80"><center>IP</center></th>
+                <th class="info" width="130"><center>Hostname</center></th>
+                <th class="info" width="120"><center>Server Status</center></th>
+                <th class="info" width="120"><center>Backup Status</center></th>
+                <th class="info" width="170"><center>Last Backup</center></th>
+            </tr>
+
+            <tr>
+                <td align="center">{{ servers.ip }}</td>
+                <td align="center"><a href="{% url 'serversmanage:serverinfo' servers.id %}"> {{ servers.hostname }}</a></td>
+                {% if servers.serverstatus == "Disabled" %}
+                    <td class="warning" align="center">{{ servers.serverstatus }}</td>
+                {% else %}
+                    <td align="center">{{ servers.serverstatus }}</td>
+                {% endif %}
+                {% if servers.backupstatus == "ERROR" %}
+                    <td class="danger" align="center">{{ servers.backupstatus }}</td>
+                {% else %}
+                    <td align="center">{{ servers.backupstatus }}</td>
+                {% endif %}
+                <td align="center">{{ servers.lastbackup }}</td>
+            </tr>
+        </table>
+    </div>
+    <form id="edit" action="{% url 'serversmanage:serveredit' servers.id %}" method="get">
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit">Edit</button>
+    </form>
+    <form id="delete" action="{% url 'serversmanage:serverdelete' servers.id %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="serversid" value="{{ servers.id }}">
+        <button class="btn btn-danger" type="submit">Delete</button>
+    </form>
+
+{% endblock %}

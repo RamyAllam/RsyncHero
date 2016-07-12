@@ -12,8 +12,9 @@ HOMEDIR = "/home"
 DAILY_BKP = "/backup/cpbackup/daily"
 
 RSYNC_EXCLUDE = "rsync_excl.txt"
-SERVERS_IPS_POOL = "servers_ip.txt"
 ssh_test_cmd = "hostname"
 number_of_threads = 16
 
 files_to_bkp = [APACHE_CONF, USER_DOMAINS, PHPCONF, CSFCONF, PHPINI, MYCNF, DAILY_BKP, HOMEDIR, MYSQL]
+
+sqlite_file = './rsynchero_web/db.sqlite3'
