@@ -1,5 +1,5 @@
 # What is RsyncHero ?
-RsyncHero is a threaded backup solution, It works on speeding and optimizing the backup process of rsync by running parallel pool of workers for the backup process and excluding file paths of common tmp files and other extenisons to save diskspace and bandwidth. In addition to that an easy-to-use web console is here to manage the backup server and clients.
+RsyncHero is a threaded backup solution, It works on speeding and optimizing the backup process of rsync by running parallel pool of workers for the backup process and excluding file paths of common tmp files and other extensions to save diskspace and bandwidth. In addition to that an easy-to-use web console is here to manage the backup server and clients.
 
 
 ## ScreenShots
