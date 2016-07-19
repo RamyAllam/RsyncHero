@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
 
-    {% if servers.hostname %}
-        <title>{% block title %}{{ servers.hostname }} - {{ servers.ip }}{% endblock %}</title>
+    {% if user.is_authenticated %}
+        {% if servers.hostname %}
+            <title>{% block title %}{{ servers.hostname }} - {{ servers.ip }}{% endblock %}</title>
+        {% else %}
+            <title>Rsync Hero - Web Console</title>
+        {% endif %}
     {% else %}
         <title>Rsync Hero - Web Console</title>
     {% endif %}
@@ -26,30 +30,40 @@
 
 </head>
 <body class="body" style="background-color:#f6f6f6">
-    <div class="container-fluid" style="min-height:95%; ">
-            <div class="row">
-                <div class="col-sm-2">
-                    <br>
-                    <a href="/"><font color="#8A7F7C" size="5px">RsyncHero</font></a>
-                    <div class="well bs-sidebar" id="sidebar" style="background-color:#fff">
-                        <ul class="nav nav-pills nav-stacked">
-                            <li><a class="glyphicon glyphicon-home" href='/'> Home</a></li>
-                            <li><a class="glyphicon glyphicon-plus" href="{% url 'serversmanage:serveradd' %}"> Add New</a></li>
-                            <li><a class="glyphicon glyphicon-cog" href='/admin/'> Admin Panel</a></li>
-                        </ul>
+    {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }} ! <a class="glyphicon glyphicon-log-out" href='/logout'>Logout</a></p>
+        <div class="container-fluid" style="min-height:95%; ">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <br>
+                        <a href="/"><font color="#8A7F7C" size="5px">RsyncHero</font></a>
+                        <div class="well bs-sidebar" id="sidebar" style="background-color:#fff">
+                            <ul class="nav nav-pills nav-stacked">
+                                <li><a class="glyphicon glyphicon-home" href='/'> Home</a></li>
+                                <li><a class="glyphicon glyphicon-plus" href="{% url 'serversmanage:serveradd' %}"> Add New</a></li>
+                                <li><a class="glyphicon glyphicon-cog" href='/admin/'> Admin Panel</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-10">
+                        <div class='container-fluid'>
+                            <br><br><br>
+                            {% block body %}
+                            {% endblock %}
+                        </div>
                     </div>
                 </div>
-                <div class="col-sm-10">
-                    <div class='container-fluid'>
-                        <br><br><br>
-                        {% block body %}
-                        {% endblock %}
-                    </div>
-                </div>
-            </div>
-    </div>
+        </div>
+    {% else %}
+        <center><a href="/login"><font size="25px">Hi There! Please log in</font></a></center>
+        <center>
+        {% block login %}
+        {% endblock %}
+        <br><br><br>
+        </center>
+    {% endif %}
 </body>
 <footer>
-    <a href="https://github.com/RamyAllam/RsyncHero/"><p align="center">Happy Backup! - RsyncHero v2.0</p></a>
+    <a href="https://github.com/RamyAllam/RsyncHero/"><p align="center">Happy Backup! - RsyncHero v2.1</p></a>
 </footer>
 </html>
