@@ -45,6 +45,7 @@ tmp/webalizer/*
 tmp/awstats/*
 tmp/horde/*
 tmp/analog/*
+.cagefs/tmp/*
 core/logs/system/*.txt
 logfiles/*.txt
 public_html/temp/server/cache_*
