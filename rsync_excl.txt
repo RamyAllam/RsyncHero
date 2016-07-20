@@ -24,6 +24,7 @@ page_enhanced/*
 /home/cpeasyapache
 /home/.cpanm
 wp-content/cache/object/*
+wp-content/cache/wp-cache-*.php
 wp-content/plugins/si-captcha-for-wordpress/captcha/cache/*
 wp-content/cache/supercache/*
 wp-content/themes/*/scripts/cache/*
