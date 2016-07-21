@@ -12,11 +12,14 @@
     {% else %}
         <title>Rsync Hero - Web Console</title>
     {% endif %}
-
+    {% load staticfiles %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" type="text/css"/>
     <link href='https://fonts.googleapis.com/css?family=Satisfy' rel='stylesheet' type='text/css'>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/css" src="{% static 'css/datatables.min.css' %}"></script>
+    <script type="text/css" src="{% static 'css/dataTables.bootstrap.min.css' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-1.12.3.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/datatables.min.js' %}"></script>
     <meta name="viewport" content = "width=device-width, initial-scale=1.0">
 
     <!-- Display form buttons in one line -->
@@ -55,7 +58,7 @@
                 </div>
         </div>
     {% else %}
-        <center><a href="/login"><font size="25px">Hi There! Please log in</font></a></center>
+        <center><a href="/login"><font size="25px">Hi there! Please log in</font></a></center>
         <center>
         {% block login %}
         {% endblock %}
@@ -64,6 +67,6 @@
     {% endif %}
 </body>
 <footer>
-    <a href="https://github.com/RamyAllam/RsyncHero/"><p align="center">Happy Backup! - RsyncHero v2.1</p></a>
+    <a href="https://github.com/RamyAllam/RsyncHero/"><p align="center">Happy Backup! - RsyncHero v2.1.1</p></a>
 </footer>
 </html>

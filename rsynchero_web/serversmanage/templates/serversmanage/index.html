@@ -1,15 +1,17 @@
 {% extends 'serversmanage/base.html' %}
 {% block body %}
     <div class="container">
-        <table class="table table-bordered table-striped table-responsive">
-            <tr>
-                <th class="info" width="80"><center>IP</center></th>
-                <th class="info" width="130"><center>Hostname</center></th>
-                <th class="info" width="120"><center>Server Status</center></th>
-                <th class="info" width="120"><center>Backup Status</center></th>
-                <th class="info" width="170"><center>Last Backup</center></th>
-            </tr>
-
+        <table id="basetable" class="table table-bordered table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th class="info" width="80"><center>IP</center></th>
+                    <th class="info" width="130"><center>Hostname</center></th>
+                    <th class="info" width="120"><center>Server Status</center></th>
+                    <th class="info" width="120"><center>Backup Status</center></th>
+                    <th class="info" width="170"><center>Last Backup</center></th>
+                </tr>
+            </thead>
+            <tbody>
             {% for server in object_list %}
                 <tr>
                     <td align="center">{{ server.ip }}</td>
@@ -26,6 +28,12 @@
                     <td align="center">{{ server.lastbackup }}</td>
                 </tr>
             {% endfor %}
+            </tbody>
         </table>
     </div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#basetable').DataTable();
+} );
+</script>
 {% endblock %}
