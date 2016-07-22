@@ -91,8 +91,50 @@ def rsync_start(server_ip):
     pool.close()
     pool.join()
 
+
+def bkp_monitor():
+    import datetime
+    from smtplib import SMTP_SSL
+    from email.mime.text import MIMEText
+    conn = sqlite3.connect(sqlite_file)
+    c = conn.cursor()
+    c.execute("select ip, hostname, backupstatus from serversmanage_servers where backupstatus='ERROR';")
+    all_rows = c.fetchall()
+    try:
+        os.remove(email_file)
+    except FileNotFoundError:
+        pass
+
+    with open(email_file, "a") as myfile:
+        myfile.write("Backup Status for: " + datetime.datetime.now().strftime("%B %d, %Y - %I:%M%p") + "\n\n")
+
+    for ip, hostname, backupstatus in all_rows:
+        with open(email_file, "a") as myfile:
+            myfile.write("IP: %s" % ip + "\n")
+            myfile.write("Hostname: %s" % hostname + "\n")
+            myfile.write("Backup Status: %s" % backupstatus + "\n============================\n")
+    conn.close()
+
+    if os.path.isfile(email_file):
+        content = open(email_file).read()
+        try:
+            msg = MIMEText(content, text_subtype)
+            msg['Subject'] = subject
+            msg['From'] = "RsyncHero %s" % sender
+            msg['To'] = destination[0]
+            conn = SMTP_SSL(SMTPserver)
+            conn.set_debuglevel(False)
+            conn.login(USERNAME, PASSWORD)
+            conn.sendmail(sender, destination, msg.as_string())
+            conn.close()
+        except EOFError:
+            print("mail failed")
+
+    os.remove(email_file)
+
 # Make the Pool of workers
 pool = ThreadPool(number_of_threads)
 results = pool.map(rsync_start, hosts_up)
 pool.close()
 pool.join()
+bkp_monitor()
