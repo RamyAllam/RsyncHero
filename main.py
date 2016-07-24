@@ -108,11 +108,16 @@ def bkp_monitor():
     with open(email_file, "a") as myfile:
         myfile.write("Backup Status for: " + datetime.datetime.now().strftime("%B %d, %Y - %I:%M%p") + "\n\n")
 
-    for ip, hostname, backupstatus in all_rows:
+    if all_rows:
+        for ip, hostname, backupstatus in all_rows:
+            with open(email_file, "a") as myfile:
+                myfile.write("IP: %s" % ip + "\n")
+                myfile.write("Hostname: %s" % hostname + "\n")
+                myfile.write("Backup Status: %s" % backupstatus + "\n============================\n")
+    else:
         with open(email_file, "a") as myfile:
-            myfile.write("IP: %s" % ip + "\n")
-            myfile.write("Hostname: %s" % hostname + "\n")
-            myfile.write("Backup Status: %s" % backupstatus + "\n============================\n")
+            myfile.write(success_message_content)
+
     conn.close()
 
     if os.path.isfile(email_file):

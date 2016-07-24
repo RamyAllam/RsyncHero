@@ -38,7 +38,8 @@ email_file = "email.txt"
 text_subtype = 'plain'
 
 # The message subject
-subject = "RsyncHero Errors Report"
+subject = "RsyncHero Backup Report"
+success_message_content = "Awesome! Backup is working properly."
 
 # MailServer IP or Hostname, Please make sure it supports SMTPoverSSL
 # Ex. server.mail.org:465
