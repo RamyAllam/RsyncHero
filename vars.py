@@ -21,13 +21,15 @@ files_to_bkp = [APACHE_CONF, USER_DOMAINS, PHPCONF, CSFCONF, PHPINI, MYCNF, cPan
 # The command that we will execute on the remote server to make sure it's connected properly.
 ssh_test_cmd = "hostname"
 
+# --- Logs ---
+# Set 0 to run in background
+rsync_stdout = 1
 
 # -- Performance --
 # Change this according to the backup server resource ( CPU - RAM - Network )
 # Mostly we set it to the number of total threads per CPU. Get the number with `nproc`
 # or `grep processor /proc/cpuinfo | wc -l` command
 number_of_threads = 16
-
 
 # -- DataBase --
 sqlite_file = './rsynchero_web/db.sqlite3'

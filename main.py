@@ -1,8 +1,10 @@
 import os
 import sys
+import getopt
 import subprocess
 from multiprocessing.dummy import Pool as ThreadPool
 import sqlite3
+from itertools import repeat
 from vars import *
 
 # Create Log dir
@@ -10,6 +12,7 @@ if not os.path.exists(BACKUPDIR_LOG):
     os.makedirs(BACKUPDIR_LOG)
 
 
+# Update the server status to down in the database
 def mark_host_db_down(serverip):
     conn = sqlite3.connect(sqlite_file)
     c = conn.cursor()
@@ -18,6 +21,7 @@ def mark_host_db_down(serverip):
     conn.close()
 
 
+# Get a list of up and down servers
 def check_alive_hosts(ssh_cmd):
     hosts_up_list = []
     hosts_down_list = []
@@ -59,10 +63,9 @@ def check_alive_hosts(ssh_cmd):
 
     return hosts_up_list, hosts_down_list
 
-hosts_up, hosts_down = check_alive_hosts(ssh_test_cmd)
 
-
-def rsync_start(server_ip):
+# Core function for Rsync process
+def rsync_start(server_ip, rsync_stdout):
     ssh_hostname_cmd = "hostname"
     ssh = subprocess.Popen(["ssh", '-o', 'UserKnownHostsFile=/root/.ssh/known_hosts', '-o',
                             'StrictHostKeyChecking=no', "%s" % server_ip, ssh_hostname_cmd],
@@ -74,10 +77,14 @@ def rsync_start(server_ip):
 
     def rsync_threaded(files_to_bkp):
         print("Start backup for : %s On %s" % (files_to_bkp, server_hostname))
-        start_backup = os.system("rsync -axSq --delete --exclude-from=%s -e 'ssh -p 22' %s:%s %s"
-                                 % (RSYNC_EXCLUDE, server_ip, files_to_bkp, BKPDIR_HOSTNAME) + "/")
-        print("Finished backup for : %s On %s" % (files_to_bkp, server_hostname))
-
+        if rsync_stdout == 1:
+            start_backup = os.system("rsync -axSq --delete --exclude-from=%s -e 'ssh -p 22' %s:%s %s"
+                                     % (RSYNC_EXCLUDE, server_ip, files_to_bkp, BKPDIR_HOSTNAME) + "/")
+            print("Finished backup for : %s On %s" % (files_to_bkp, server_hostname))
+        else:
+            start_backup = os.system("rsync -axSq --delete --exclude-from=%s -e 'ssh -p 22' %s:%s %s"
+                                     % (RSYNC_EXCLUDE, server_ip, files_to_bkp, BKPDIR_HOSTNAME) + "/ &")
+            print("Background process is running for : %s On %s" % (files_to_bkp, server_hostname))
         conn = sqlite3.connect(sqlite_file)
         c = conn.cursor()
         c.execute("""UPDATE serversmanage_servers SET lastbackup = CURRENT_TIMESTAMP WHERE ip = ? """, (server_ip, ))
@@ -92,6 +99,7 @@ def rsync_start(server_ip):
     pool.join()
 
 
+# Monitor the backup status whether it's Ok or errors found an send mail notification
 def bkp_monitor():
     import datetime
     from smtplib import SMTP_SSL
@@ -137,9 +145,62 @@ def bkp_monitor():
 
     os.remove(email_file)
 
-# Make the Pool of workers
-pool = ThreadPool(number_of_threads)
-results = pool.map(rsync_start, hosts_up)
-pool.close()
-pool.join()
-bkp_monitor()
+
+def backup_all_servers():
+    # Get a list of up and down servers
+    hosts_up, hosts_down = check_alive_hosts(ssh_test_cmd)
+
+    # Prepare the list for starmap two arguments.
+    hosts_up_two_args = []
+
+    # Add the argument to hosts list and append to separate list.
+    # Output should be something like [('a', 1), ('b', 1), ('c', 1)]
+    for i in zip(hosts_up, repeat(rsync_stdout)):
+        hosts_up_two_args.append(i)
+
+    # Make the Pool of workers
+    pool = ThreadPool(number_of_threads)
+    results = pool.starmap(rsync_start, hosts_up_two_args)
+    pool.close()
+    pool.join()
+
+
+def backup_one_server(server_ip):
+    # This function need the parameter as a list
+    # Prepare the list for starmap two arguments.
+    hosts_up = []
+    hosts_up_two_args = []
+
+    hosts_up.append(server_ip)
+
+    # Add the argument to hosts list and append to separate list.
+    # Output should be something like [('a', 1), ('b', 1), ('c', 1)]
+    # Always run backup one server in backgroup ( append 0 )
+    for i in zip(hosts_up, repeat(0)):
+        hosts_up_two_args.append(i)
+
+    # Make the Pool of workers
+    pool = ThreadPool(number_of_threads)
+    results = pool.starmap(rsync_start, hosts_up_two_args)
+    pool.close()
+    pool.join()
+
+
+try:
+    opts, args = getopt.getopt(sys.argv[1:], "hs:as:o:", ["help", "all", "ip="])
+except getopt.GetoptError as err:
+    print("Please enter the correct opt")
+    sys.exit(2)
+
+for opt, arg in opts:
+    if opt in ("-h", "--help"):
+        print("Usage : python3 main.py --ACTION")
+        print("Available actions are : --all, --ip")
+
+    elif opt in ("-a", "--all"):
+        backup_all_servers()
+        bkp_monitor()
+
+    if opt in ("-o", "--ip"):
+        value = arg
+        backup_one_server(value)

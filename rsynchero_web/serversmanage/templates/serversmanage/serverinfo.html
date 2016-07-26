@@ -37,5 +37,15 @@
         <input type="hidden" name="serversid" value="{{ servers.id }}">
         <button class="btn btn-danger" type="submit">Delete</button>
     </form>
-
+    <form action="/runbackup/" method="get">
+        <input type="hidden" value="{{ servers.hostname }}" name="serverhostname"/>
+        <input type="hidden" value="{{ servers.id }}" name="serverid"/>
+        <input type="hidden" value="{{ servers.ip }}" name="serverip"/>
+        <button class="btn btn-info" value="runbackup" name="runbackup" onclick="myFunction()">Backup now</button>
+        <script>
+            function myFunction() {
+                alert("Backup command will be sent\nPlease monitor from SSH.\n'ps aux | grep {{ servers.ip }}'");
+            }
+        </script>
+    </form>
 {% endblock %}
