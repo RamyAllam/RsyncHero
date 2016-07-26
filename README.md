@@ -44,6 +44,6 @@ And for local network
 ```
 python3 manage.py runserver
 ```
-- Enter the backup server IP and port in the brower add the clients from the web console.
-- Execute `main.py` from the ROOT dir and enjoy!
+- Enter the backup server IP and port in the browser and add the clients from the web console.
+- Execute `python3 main.py --all` from the ROOT dir to backup all servers or `python3 main.py --ip=SERVERIP` to backup specific server.
 - Do not forget to play around with your cron.
