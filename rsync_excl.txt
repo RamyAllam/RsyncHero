@@ -49,3 +49,4 @@ tmp/analog/*
 core/logs/system/*.txt
 logfiles/*.txt
 public_html/temp/server/cache_*
+system/cache/zend_cache*
