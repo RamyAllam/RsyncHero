@@ -31,7 +31,6 @@ def check_alive_hosts(ssh_cmd):
     c = conn.cursor()
     c.execute("select ip from serversmanage_servers where serverstatus='Enabled';")
     all_rows = c.fetchall()
-    conn.close()
 
     ip_list = []
     for ip in all_rows:
@@ -47,11 +46,18 @@ def check_alive_hosts(ssh_cmd):
             mark_host_db_down(server_ip)
 
     for server in hosts_ping_up_list:
-        ssh = subprocess.Popen(["ssh", '-o', 'UserKnownHostsFile=/root/.ssh/known_hosts', '-o',
-                                'StrictHostKeyChecking=no', "%s" % server, ssh_cmd],
-                               shell=False,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+        # GET SSH Port from database
+        c.execute("select sshport from serversmanage_servers where ip='%s';" % server)
+        all_rows = c.fetchall()
+
+        ssh_port = str(all_rows[0]).replace("(", "").replace(",)", "")
+        # Check SSH Connection
+        ssh = subprocess.Popen(
+            ["ssh", '-p' '%s' % ssh_port, '-o', 'UserKnownHostsFile=/root/.ssh/known_hosts', '-o',
+             'StrictHostKeyChecking=no', 'root@%s' % server, ssh_cmd],
+            shell=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
         ssh_result = ssh.stdout.readlines()
         if not ssh_result:
             error = ssh.stderr.readlines()
@@ -60,14 +66,23 @@ def check_alive_hosts(ssh_cmd):
             mark_host_db_down(server)
         else:
             hosts_up_list.append(server.rstrip())
-
+    conn.close()
     return hosts_up_list, hosts_down_list
 
 
 # Core function for Rsync process
 def rsync_start(server_ip, rsync_stdout):
+    # GET SSH Port from database
+    conn = sqlite3.connect(sqlite_file)
+    c = conn.cursor()
+    c.execute("select sshport from serversmanage_servers where ip='%s';" % server_ip)
+    all_rows = c.fetchall()
+    conn.close()
+    ssh_port = str(all_rows[0]).replace("(", "").replace(",)", "")
+
+    # Get FQDN from inside the server
     ssh_hostname_cmd = "hostname"
-    ssh = subprocess.Popen(["ssh", '-o', 'UserKnownHostsFile=/root/.ssh/known_hosts', '-o',
+    ssh = subprocess.Popen(["ssh", '-p' '%s' % ssh_port, '-o', 'UserKnownHostsFile=/root/.ssh/known_hosts', '-o',
                             'StrictHostKeyChecking=no', "%s" % server_ip, ssh_hostname_cmd],
                            shell=False,
                            stdout=subprocess.PIPE,
@@ -78,13 +93,15 @@ def rsync_start(server_ip, rsync_stdout):
     def rsync_threaded(files_to_bkp):
         print("Start backup for : %s On %s" % (files_to_bkp, server_hostname))
         if rsync_stdout == 1:
-            start_backup = os.system("rsync -axSq --delete --exclude-from=%s -e 'ssh -p 22' %s:%s %s"
-                                     % (RSYNC_EXCLUDE, server_ip, files_to_bkp, BKPDIR_HOSTNAME) + "/")
+            start_backup = os.system("rsync -axSq --delete --exclude-from=%s -e 'ssh -p %s' %s:%s %s"
+                                     % (RSYNC_EXCLUDE, ssh_port, server_ip, files_to_bkp, BKPDIR_HOSTNAME) + "/")
             print("Finished backup for : %s On %s" % (files_to_bkp, server_hostname))
         else:
-            start_backup = os.system("rsync -axSq --delete --exclude-from=%s -e 'ssh -p 22' %s:%s %s"
-                                     % (RSYNC_EXCLUDE, server_ip, files_to_bkp, BKPDIR_HOSTNAME) + "/ &")
+            start_backup = os.system("rsync -axSq --delete --exclude-from=%s -e 'ssh -p %s' %s:%s %s"
+                                     % (RSYNC_EXCLUDE, ssh_port, server_ip, files_to_bkp, BKPDIR_HOSTNAME) + "/ &")
             print("Background process is running for : %s On %s" % (files_to_bkp, server_hostname))
+
+        # Set backup status in the database
         conn = sqlite3.connect(sqlite_file)
         c = conn.cursor()
         c.execute("""UPDATE serversmanage_servers SET lastbackup = CURRENT_TIMESTAMP WHERE ip = ? """, (server_ip, ))
@@ -104,6 +121,7 @@ def bkp_monitor():
     import datetime
     from smtplib import SMTP_SSL
     from email.mime.text import MIMEText
+    # GET a list of servers with backup errors
     conn = sqlite3.connect(sqlite_file)
     c = conn.cursor()
     c.execute("select ip, hostname, backupstatus from serversmanage_servers where backupstatus='ERROR';")
@@ -116,6 +134,7 @@ def bkp_monitor():
     with open(email_file, "a") as myfile:
         myfile.write("Backup Status for: " + datetime.datetime.now().strftime("%B %d, %Y - %I:%M%p") + "\n\n")
 
+    # IF backup errors found, include it's information in the msg.
     if all_rows:
         for ip, hostname, backupstatus in all_rows:
             with open(email_file, "a") as myfile:
@@ -123,9 +142,9 @@ def bkp_monitor():
                 myfile.write("Hostname: %s" % hostname + "\n")
                 myfile.write("Backup Status: %s" % backupstatus + "\n============================\n")
     else:
+        # IF all is awesome, return success msg
         with open(email_file, "a") as myfile:
             myfile.write(success_message_content)
-
     conn.close()
 
     if os.path.isfile(email_file):
@@ -175,7 +194,7 @@ def backup_one_server(server_ip):
 
     # Add the argument to hosts list and append to separate list.
     # Output should be something like [('a', 1), ('b', 1), ('c', 1)]
-    # Always run backup one server in backgroup ( append 0 )
+    # Always run backup one server in background ( append 0 )
     for i in zip(hosts_up, repeat(0)):
         hosts_up_two_args.append(i)
 
