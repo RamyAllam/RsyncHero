@@ -14,7 +14,7 @@ if not os.path.exists(BACKUPDIR_LOG):
 
 # Update the server status to down in the database
 def mark_host_db_down(serverip):
-    conn = sqlite3.connect(sqlite_file)
+    conn = sqlite3.connect(sqlite_file, timeout=10)
     c = conn.cursor()
     c.execute("""UPDATE serversmanage_servers SET backupstatus = 'ERROR' WHERE ip = ? """, (serverip, ))
     conn.commit()
@@ -27,7 +27,7 @@ def check_alive_hosts(ssh_cmd):
     hosts_down_list = []
     hosts_ping_up_list = []
     hosts_ping_down_list = []
-    conn = sqlite3.connect(sqlite_file)
+    conn = sqlite3.connect(sqlite_file, timeout=10)
     c = conn.cursor()
     c.execute("select ip from serversmanage_servers where serverstatus='Enabled';")
     all_rows = c.fetchall()
@@ -73,7 +73,7 @@ def check_alive_hosts(ssh_cmd):
 # Core function for Rsync process
 def rsync_start(server_ip, rsync_stdout):
     # GET SSH Port from database
-    conn = sqlite3.connect(sqlite_file)
+    conn = sqlite3.connect(sqlite_file, timeout=10)
     c = conn.cursor()
     c.execute("select sshport from serversmanage_servers where ip='%s';" % server_ip)
     all_rows = c.fetchall()
@@ -102,7 +102,7 @@ def rsync_start(server_ip, rsync_stdout):
             print("Background process is running for : %s On %s" % (files_to_bkp, server_hostname))
 
         # Set backup status in the database
-        conn = sqlite3.connect(sqlite_file)
+        conn = sqlite3.connect(sqlite_file, timeout=10)
         c = conn.cursor()
         c.execute("""UPDATE serversmanage_servers SET lastbackup = CURRENT_TIMESTAMP WHERE ip = ? """, (server_ip, ))
         c.execute("""UPDATE serversmanage_servers SET backupstatus = 'Good' WHERE ip = ? """, (server_ip, ))
@@ -122,7 +122,7 @@ def bkp_monitor():
     from smtplib import SMTP_SSL
     from email.mime.text import MIMEText
     # GET a list of servers with backup errors
-    conn = sqlite3.connect(sqlite_file)
+    conn = sqlite3.connect(sqlite_file, timeout=10)
     c = conn.cursor()
     c.execute("select ip, hostname, backupstatus from serversmanage_servers where backupstatus='ERROR';")
     all_rows = c.fetchall()
