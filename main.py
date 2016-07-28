@@ -37,7 +37,7 @@ def check_alive_hosts(ssh_cmd):
         ip_list.append(", ".join(ip))
 
     for server_ip in ip_list:
-        ping_chk = os.system("ping -c 1 " + server_ip)
+        ping_chk = os.system("ping -c 5 " + server_ip)
         if ping_chk == 0:
             hosts_ping_up_list.append(server_ip)
         else:
