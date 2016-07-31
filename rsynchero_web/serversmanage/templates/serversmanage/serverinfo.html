@@ -48,4 +48,9 @@
             }
         </script>
     </form>
+    {% if servers.serverstatus == "Enabled" %}
+        <a href="{% url 'serversmanage:serverdisable' servers.id %}" class="btn btn-warning">Disable</a>
+    {% else %}
+        <a href="{% url 'serversmanage:serverenable' servers.id %}" class="btn btn-success">Enable</a>
+    {% endif %}
 {% endblock %}
