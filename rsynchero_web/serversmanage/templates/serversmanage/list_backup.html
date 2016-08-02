@@ -4,10 +4,8 @@
 <div class="panel panel-default" xmlns="http://www.w3.org/1999/html">
     <div class="panel-heading">
         The backup restore command will be sent in the background for each element. You can monitor the process from the
-        backup server or the client with the following cmd
-     <br>
-        <b>'ps aux | grep {{ server_ip }}'</b>
-    <br>
+        backup server or the client using 'ps aux | grep {{ server_ip }}'
+
     <br>
         Please make sure the parent directory is found on the client before the restore action. Ex. If you are restoring /etc/dir/file.cnf
         make sure /etc/dir is exists on the client.
@@ -36,4 +34,7 @@
         </table>
     </div>
 {% endif %}
+<div align="center" class="">
+    <a class="" href="javascript:history.back()">Go Back</a>
+</div>
 {% endblock %}

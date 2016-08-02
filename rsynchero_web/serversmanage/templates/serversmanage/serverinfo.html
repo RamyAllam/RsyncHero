@@ -55,5 +55,7 @@
     {% endif %}
 
     <a href="{% url 'serversmanage:list_backup' servers.id %}" class="btn btn-success">Restore Backup</a>
-
+    <div align="center" class="">
+        <a class="" href="javascript:history.back()">Go Back</a>
+    </div>
 {% endblock %}
