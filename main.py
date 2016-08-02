@@ -83,7 +83,7 @@ def rsync_start(server_ip, rsync_stdout):
     # Get FQDN from inside the server
     ssh_hostname_cmd = "hostname"
     ssh = subprocess.Popen(["ssh", '-p' '%s' % ssh_port, '-o', 'UserKnownHostsFile=/root/.ssh/known_hosts', '-o',
-                            'StrictHostKeyChecking=no', "%s" % server_ip, ssh_hostname_cmd],
+                            'StrictHostKeyChecking=no', "root@%s" % server_ip, ssh_hostname_cmd],
                            shell=False,
                            stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE)
@@ -93,12 +93,12 @@ def rsync_start(server_ip, rsync_stdout):
     def rsync_threaded(files_to_bkp):
         print("Start backup for : %s On %s" % (files_to_bkp, server_hostname))
         if rsync_stdout == 1:
-            start_backup = os.system("rsync -axSq --delete --exclude-from=%s -e 'ssh -p %s' %s:%s %s"
+            start_backup = os.system("rsync -axSqR --delete --exclude-from=%s -e 'ssh -p %s' root@%s:%s %s"
                                      % (RSYNC_EXCLUDE, ssh_port, server_ip, files_to_bkp, BKPDIR_HOSTNAME) + "/")
             print("Finished backup for : %s On %s" % (files_to_bkp, server_hostname))
         else:
-            start_backup = os.system("rsync -axSq --delete --exclude-from=%s -e 'ssh -p %s' %s:%s %s"
-                                     % (RSYNC_EXCLUDE, ssh_port, server_ip, files_to_bkp, BKPDIR_HOSTNAME) + "/ &")
+            start_backup = os.system("rsync -axSqR --delete --exclude-from=%s -e 'ssh -p %s' root@%s:%s %s"
+                                     % (RSYNC_EXCLUDE, ssh_port, server_ip, files_to_bkp, BKPDIR_HOSTNAME) + "/ ")
             print("Background process is running for : %s On %s" % (files_to_bkp, server_hostname))
 
         # Set backup status in the database

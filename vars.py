@@ -2,6 +2,7 @@
 ##############################################################################
 # -- Dirs Paths and Dirs Selection --
 # Add/Remove/Modify the following variables based on your needs and finally add them to files_to_bkp list.
+# Note : Please DO NOT add more than one trailing slash to paths. Trailing slashes are optional
 BACKUPDIR = "/backup/servers/"
 BACKUPDIR_LOG = BACKUPDIR + 'logs'
 MYSQL = "/var/lib/mysql"

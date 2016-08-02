@@ -53,4 +53,7 @@
     {% else %}
         <a href="{% url 'serversmanage:serverenable' servers.id %}" class="btn btn-success">Enable</a>
     {% endif %}
+
+    <a href="{% url 'serversmanage:list_backup' servers.id %}" class="btn btn-success">Restore Backup</a>
+
 {% endblock %}

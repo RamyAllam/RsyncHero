@@ -1,0 +1,41 @@
+{% extends 'serversmanage/base.html' %}
+{% block body %}
+{% if list_backup_dirs %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        The backup restore command will be sent in the background for each element. You can monitor the process from the
+        backup server or the client.
+    <br>
+        Please make sure the parent directory is found on the client before the restore action. Ex. If you are restoring /etc/dir/file.cnf
+        make sure /etc/dir is exists on the client.
+    <br>
+        <b>Action Logs</b> : Stored in : <i>{{ BACKUPDIR_LOG }}/{{ hostname }}.txt</i>
+    <br>
+        <b>Error Logs</b>: Stored in : <i>{{ BACKUPDIR_LOG }}/{{ hostname }}_errors.txt</i>
+    </div>
+        <table class="table table-bordered table-striped">
+            <tr>
+                <th class="info" width="80"><center>Directory</center></th>
+                <th class="info" width="130"><center>Action</center></th>
+            </tr>
+
+            {% for dir_to_restore in list_backup_dirs %}
+                <tr>
+                    <td align="center">{{ dir_to_restore }}</td>
+                    <td align="center">
+                    <form action="{% url 'serversmanage:restore_backup' server_id %}/{{ dir_to_restore }}" method="get">
+                        <input type="hidden" value="{{ dir_to_restore }}" name="dir_to_restore"/>
+                        <button class="btn btn-info" value="restore_backup" name="restore_backup" onclick="restore_backup_function()">Restore Backup</button >
+                        <script>
+                            function restore_backup_function() {
+                                alert("Backup command will be sent\nPlease monitor from SSH.\n'ps aux | grep {{ server_ip }}'");
+                            }
+                        </script>
+                    </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endif %}
+{% endblock %}
