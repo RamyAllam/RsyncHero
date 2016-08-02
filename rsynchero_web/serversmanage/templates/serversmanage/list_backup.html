@@ -1,17 +1,20 @@
 {% extends 'serversmanage/base.html' %}
 {% block body %}
 {% if list_backup_dirs %}
-<div class="panel panel-default">
+<div class="panel panel-default" xmlns="http://www.w3.org/1999/html">
     <div class="panel-heading">
         The backup restore command will be sent in the background for each element. You can monitor the process from the
-        backup server or the client.
+        backup server or the client with the following cmd
+     <br>
+        <b>'ps aux | grep {{ server_ip }}'</b>
+    <br>
     <br>
         Please make sure the parent directory is found on the client before the restore action. Ex. If you are restoring /etc/dir/file.cnf
         make sure /etc/dir is exists on the client.
     <br>
-        <b>Action Logs</b> : Stored in : <i>{{ BACKUPDIR_LOG }}/{{ hostname }}.txt</i>
+        <b>Action Logs</b> <i>{{ BACKUPDIR_LOG }}/{{ hostname }}.txt</i>
     <br>
-        <b>Error Logs</b>: Stored in : <i>{{ BACKUPDIR_LOG }}/{{ hostname }}_errors.txt</i>
+        <b>Error Logs</b>: <i>{{ BACKUPDIR_LOG }}/{{ hostname }}_errors.txt</i>
     </div>
         <table class="table table-bordered table-striped">
             <tr>
@@ -23,14 +26,9 @@
                 <tr>
                     <td align="center">{{ dir_to_restore }}</td>
                     <td align="center">
-                    <form action="{% url 'serversmanage:restore_backup' server_id %}/{{ dir_to_restore }}" method="get">
+                    <form action="{% url 'serversmanage:restore_backup' server_id %}/{{ dir_to_restore }}" method="get" onsubmit="return confirm('Are you sure you want to restore?');">
                         <input type="hidden" value="{{ dir_to_restore }}" name="dir_to_restore"/>
-                        <button class="btn btn-info" value="restore_backup" name="restore_backup" onclick="restore_backup_function()">Restore Backup</button >
-                        <script>
-                            function restore_backup_function() {
-                                alert("Backup command will be sent\nPlease monitor from SSH.\n'ps aux | grep {{ server_ip }}'");
-                            }
-                        </script>
+                        <input type="submit" class="btn btn-info" value="Restore Backup" name="restore_backup" />
                     </form>
                     </td>
                 </tr>
