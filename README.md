@@ -15,7 +15,8 @@ RsyncHero is a threaded backup solution, It works on speeding and optimizing the
 ![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/serveredit.png)
 #### Notifications
 ![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/bkp_monitor.png)
-
+#### Restore Backup
+![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/restore_bkp.png)
 
 ## Requirements
 - Python3 with SQLite enabled
