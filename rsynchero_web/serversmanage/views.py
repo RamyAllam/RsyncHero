@@ -1,6 +1,7 @@
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from . models import servers
+from . forms import ServerAddForm, ServerUpdateForm
 from django.shortcuts import get_object_or_404, render
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
@@ -19,14 +20,14 @@ class ServerInfo(generic.DetailView):
 
 
 class ServerAdd(CreateView):
+    form_class = ServerAddForm
     model = servers
-    fields = ['hostname', 'ip', 'sshport']
     template_name = 'serversmanage/server_form.html'
 
 
 class ServerUpdate(UpdateView):
+    form_class = ServerUpdateForm
     model = servers
-    fields = ['hostname', 'ip', 'sshport', 'serverstatus']
     template_name = 'serversmanage/server_form.html'
 
 
@@ -114,7 +115,7 @@ def restore_backup(request, server_id):
         cmd_logs_errors = BACKUPDIR_LOG + "/" + hostname + '_errors.txt'
         time_now = datetime.datetime.now().strftime("%B %d, %Y - %I:%M%p")
 
-        # Rsync for fles shoul not contain a trailing slash
+        # Rsync for file should not contain a trailing slash
         # rsync -axSq /backup/servers/HOSTNAME/etc/php.ini -e 'ssh -p 22' 1.1.1.1:/etc/php.ini
         if os.path.isfile(dir_to_restore_local):
             rsync_cmd = "rsync -axSq %s -e 'ssh -p %s' root@%s:%s 2>>%s &" \
