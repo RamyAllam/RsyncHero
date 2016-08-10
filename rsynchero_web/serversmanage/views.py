@@ -71,13 +71,16 @@ def list_backup(request, server_id):
     sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../"))
 
     # GET the configured dirs to backup from variable file
-    from vars import files_to_bkp, BACKUPDIR_LOG
+    from vars import files_to_bkp, BACKUPDIR_LOG, BACKUPDIR
 
     # Check if Paths found on the backup server
+    # Ex. short path = /home
+    # Ex. Full path = /backup/servers/HOSTNAME/home
     files_to_bkp_found = []
-    for path in files_to_bkp:
-        if os.path.isfile(path) or os.path.isdir(path):
-            files_to_bkp_found.append(path)
+    for short_path in files_to_bkp:
+        full_path = BACKUPDIR + "/" + hostname + "/" + short_path
+        if os.path.isfile(full_path) or os.path.isdir(full_path):
+            files_to_bkp_found.append(short_path)
     output = files_to_bkp_found
     return render(request, 'serversmanage/list_backup.html', {'list_backup_dirs': output, 'server_id': id, 'server_ip': ip,
                                                               'BACKUPDIR_LOG': BACKUPDIR_LOG, 'hostname': hostname})
