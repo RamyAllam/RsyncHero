@@ -72,7 +72,13 @@ def list_backup(request, server_id):
 
     # GET the configured dirs to backup from variable file
     from vars import files_to_bkp, BACKUPDIR_LOG
-    output = files_to_bkp
+
+    # Check if Paths found on the backup server
+    files_to_bkp_found = []
+    for path in files_to_bkp:
+        if os.path.isfile(path) or os.path.isdir(path):
+            files_to_bkp_found.append(path)
+    output = files_to_bkp_found
     return render(request, 'serversmanage/list_backup.html', {'list_backup_dirs': output, 'server_id': id, 'server_ip': ip,
                                                               'BACKUPDIR_LOG': BACKUPDIR_LOG, 'hostname': hostname})
 
