@@ -1,0 +1,23 @@
+{% extends 'serversmanage/base.html' %}
+{% block body %}
+{% if logs_content %}
+    <div class="panel panel-default" xmlns="http://www.w3.org/1999/html">
+        <div class="panel-heading">
+            <b>Action Logs</b> <i>{{ BACKUPDIR_LOG }}/{{ hostname }}.txt</i>
+        <br>
+            <b>Error Logs</b>: <i>{{ BACKUPDIR_LOG }}/{{ hostname }}_errors.txt</i>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <pre>{{ logs_content }}</pre>
+    </div>
+{% else %}
+    <div align="center">
+    <b>Sorry, No Logs Found</b>
+    </div>
+{% endif %}
+<div align="center">
+    <a class="" href="javascript:history.back()">Go Back</a>
+</div>
+{% endblock %}

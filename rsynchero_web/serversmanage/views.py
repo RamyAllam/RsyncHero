@@ -168,3 +168,24 @@ def restore_backup(request, server_id):
                              "\nTime: %s" % (hostname, server_ip, dir_to_restore_local, time_now))
 
         return HttpResponseRedirect('/server/' + server_id + '/list_backup')
+
+
+def view_logs(request, server_id):
+    import os
+    import sys
+    server = get_object_or_404(servers, pk=server_id)
+    hostname = server.hostname
+    sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../"))
+
+    # GET the configured dirs from variable file
+    from vars import BACKUPDIR_LOG
+    cmd_logs = BACKUPDIR_LOG + "/" + hostname + '.txt'
+
+    if os.path.isfile(cmd_logs):
+        with open(cmd_logs, "r") as myfile:
+            content = myfile.read()
+
+        return render(request, 'serversmanage/view_logs.html', {'logs_content': content,
+                                                                  'BACKUPDIR_LOG': BACKUPDIR_LOG, 'hostname': hostname})
+    else:
+        return render(request, 'serversmanage/view_logs.html', {'BACKUPDIR_LOG': BACKUPDIR_LOG, 'hostname': hostname})
