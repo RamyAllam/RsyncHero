@@ -51,3 +51,4 @@ core/logs/system/*.txt
 logfiles/*.txt
 temp/server/cache_*
 system/cache/zend_cache*
+media/k2/items/cache/*
