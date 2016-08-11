@@ -54,7 +54,7 @@ def check_alive_hosts(ssh_cmd):
         # Check SSH Connection
         ssh = subprocess.Popen(
             ["ssh", '-p' '%s' % ssh_port, '-o', 'UserKnownHostsFile=/root/.ssh/known_hosts', '-o',
-             'StrictHostKeyChecking=no', 'root@%s' % server, ssh_cmd],
+             'StrictHostKeyChecking=no', '-o', 'BatchMode=yes', 'root@%s' % server, ssh_cmd],
             shell=False,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
@@ -72,22 +72,17 @@ def check_alive_hosts(ssh_cmd):
 
 # Core function for Rsync process
 def rsync_start(server_ip, rsync_stdout):
-    # GET SSH Port from database
+    # GET SSH Port and Hostname from database
     conn = sqlite3.connect(sqlite_file, timeout=10)
     c = conn.cursor()
     c.execute("select sshport from serversmanage_servers where ip='%s';" % server_ip)
-    all_rows = c.fetchall()
+    ssh_port_rows = c.fetchall()
+    c.execute("select hostname from serversmanage_servers where ip='%s';" % server_ip)
+    hostname_rows = c.fetchall()
     conn.close()
-    ssh_port = str(all_rows[0]).replace("(", "").replace(",)", "")
+    ssh_port = str(ssh_port_rows[0]).replace("(", "").replace(",)", "")
+    server_hostname = str(hostname_rows[0]).replace("(", "").replace(",)", "").replace("'", "")
 
-    # Get FQDN from inside the server
-    ssh_hostname_cmd = "hostname"
-    ssh = subprocess.Popen(["ssh", '-p' '%s' % ssh_port, '-o', 'UserKnownHostsFile=/root/.ssh/known_hosts', '-o',
-                            'StrictHostKeyChecking=no', "root@%s" % server_ip, ssh_hostname_cmd],
-                           shell=False,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE)
-    server_hostname = str(ssh.stdout.readlines()).replace("[b'", "").replace('\\n\']', "")
     BKPDIR_HOSTNAME = BACKUPDIR + server_hostname
 
     def rsync_threaded(files_to_bkp):
