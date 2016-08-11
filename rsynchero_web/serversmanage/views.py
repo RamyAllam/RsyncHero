@@ -97,6 +97,11 @@ def restore_backup(request, server_id):
     ssh_port = server.sshport
     server_ip = server.ip
 
+    # GET logged-in username
+    username = None
+    if request.user.is_authenticated():
+        username = request.user.username
+
     # Parse the GET request from the form and get the required values
     if request.GET.get('restore_backup'):
         # Dirs available for backup, Full paths.
@@ -133,11 +138,12 @@ def restore_backup(request, server_id):
             # Log action details
             with open(cmd_logs, "a") as myfile:
                 myfile.write("\n============================================================="
+                             "\nUser : %s"
                              "\nHostname : %s"
                              "\nIP : %s"
                              "\nCommand : %s"
                              "\nAction: RESTORE"
-                             "\nTime: %s" % (hostname, server_ip, rsync_cmd, time_now))
+                             "\nTime: %s" % (username, hostname, server_ip, rsync_cmd, time_now))
             restore = os.system(rsync_cmd)
 
         # To prevent against creating new folders Rsync command for dirs should contain a trailing /
@@ -149,11 +155,12 @@ def restore_backup(request, server_id):
             # Log action details
             with open(cmd_logs, "a") as myfile:
                 myfile.write("\n============================================================="
+                             "\nUser : %s"
                              "\nHostname : %s"
                              "\nIP : %s"
                              "\nCommand : %s"
                              "\nAction: RESTORE"
-                             "\nTime: %s" % (hostname, server_ip, rsync_cmd, time_now))
+                             "\nTime: %s" % (username, hostname, server_ip, rsync_cmd, time_now))
             restore = os.system(rsync_cmd)
 
         # If there are no files or folders exist
@@ -161,11 +168,12 @@ def restore_backup(request, server_id):
             # Log action details
             with open(cmd_logs, "a") as myfile:
                 myfile.write("\n============================================================="
+                             "\nUser : %s"
                              "\nHostname : %s"
                              "\nIP : %s"
                              "\nSource : %s"
                              "\nResults: Dir not found"
-                             "\nTime: %s" % (hostname, server_ip, dir_to_restore_local, time_now))
+                             "\nTime: %s" % (username, hostname, server_ip, dir_to_restore_local, time_now))
 
         return HttpResponseRedirect('/server/' + server_id + '/list_backup')
 
