@@ -31,6 +31,7 @@ wp-content/themes/*/scripts/cache/*
 wp-content/themes/*/timthumb/cache/*
 wp-content/cache/log/*
 wp-content/cache/meta/*
+temp/cache/default/wp/*
 templates_cache/mobile/*
 timthumb/cache/*
 contents/power/*
