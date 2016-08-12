@@ -1,0 +1,15 @@
+{% extends 'serversmanage/base.html' %}
+{% block body %}
+{% if ssh_output_error %}
+    <pre>Errors found: {{ ssh_output_error }}</pre>
+{% endif %}
+
+{% if ssh_output %}
+    <pre>Awesome!<br>{{ ssh_output }}</pre>
+{% endif %}
+
+<div align="center">
+    <a class="" href="javascript:history.back()">Go Back</a>
+</div>
+
+{% endblock %}

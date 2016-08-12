@@ -197,3 +197,28 @@ def view_logs(request, server_id):
                                                                   'BACKUPDIR_LOG': BACKUPDIR_LOG, 'hostname': hostname})
     else:
         return render(request, 'serversmanage/view_logs.html', {'BACKUPDIR_LOG': BACKUPDIR_LOG, 'hostname': hostname})
+
+
+def test_ssh(request, server_id):
+    import subprocess
+    import os
+    import sys
+    server = get_object_or_404(servers, pk=server_id)
+    id = server.id
+    ip = server.ip
+    ssh_port = server.sshport
+    hostname = server.hostname
+    sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../"))
+
+    ssh = subprocess.Popen(
+        ["ssh", '-p' '%s' % ssh_port, '-o', 'UserKnownHostsFile=/root/.ssh/known_hosts', '-o',
+         'StrictHostKeyChecking=no', '-o', 'BatchMode=yes', 'root@%s' % ip, 'echo "Hi, I am still alive :)"'],
+        shell=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+    ssh_result = ssh.stdout.readlines()
+    if not ssh_result:
+        error = ssh.stderr.readlines()
+        return render(request, 'serversmanage/test_ssh.html', {'ssh_output_error': error})
+    else:
+        return render(request, 'serversmanage/test_ssh.html', {'ssh_output': ssh_result})
