@@ -8,7 +8,7 @@ RsyncHero is a threaded backup solution, It works on speeding and optimizing the
 #### Home
 ![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/home.png)
 #### Client Control
-![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/servercontrol.png)
+![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/server_info.png)
 #### Client Add
 ![](https://raw.githubusercontent.com/RamyAllam/RsyncHero/master/rsynchero_web/screenshots/serveradd.png)
 #### Client Edit
