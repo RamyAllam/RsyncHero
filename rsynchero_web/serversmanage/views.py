@@ -210,8 +210,9 @@ def test_ssh(request, server_id):
     hostname = server.hostname
     sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../"))
 
+    # Test SSH connection and timeout after 10 seconds
     ssh = subprocess.Popen(
-        ["ssh", '-p' '%s' % ssh_port, '-o', 'UserKnownHostsFile=/root/.ssh/known_hosts', '-o',
+        ["ssh", '-p' '%s' % ssh_port, '-o', 'ConnectTimeout=10', '-o', 'UserKnownHostsFile=/root/.ssh/known_hosts', '-o',
          'StrictHostKeyChecking=no', '-o', 'BatchMode=yes', 'root@%s' % ip, 'echo "Hi, I am still alive :)"'],
         shell=False,
         stdout=subprocess.PIPE,
