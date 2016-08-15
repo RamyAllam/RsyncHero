@@ -1,0 +1,15 @@
+{% extends 'serversmanage/base.html' %}
+{% block body %}
+{% if ssh_output_found %}
+    {% for process in ssh_output_found %}
+        <pre>{{ process }}</pre>
+    {% endfor %}
+{% else %}
+    <div align="center">
+    <b>No Running Jobs Found</b>
+    </div>
+{% endif %}
+<div align="center">
+    <a class="" href="javascript:history.back()">Go Back</a>
+</div>
+{% endblock %}

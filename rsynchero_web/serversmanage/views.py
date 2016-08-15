@@ -223,3 +223,20 @@ def test_ssh(request, server_id):
         return render(request, 'serversmanage/test_ssh.html', {'ssh_output_error': error})
     else:
         return render(request, 'serversmanage/test_ssh.html', {'ssh_output': ssh_result})
+
+
+def view_running_jobs(request, server_id):
+    import subprocess
+    server = get_object_or_404(servers, pk=server_id)
+    id = server.id
+    ip = server.ip
+    ssh = subprocess.Popen(
+        ["ps aux | grep -v grep | grep %s" % ip],
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+    ssh_result = ssh.stdout.readlines()
+    if ssh_result:
+        return render(request, 'serversmanage/view_running_jobs.html', {'ssh_output_found': ssh_result})
+    else:
+        return render(request, 'serversmanage/view_running_jobs.html')
