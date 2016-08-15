@@ -236,3 +236,17 @@ def view_running_jobs(request, server_id):
         return render(request, 'serversmanage/view_running_jobs.html', {'ssh_output_found': ssh_result})
     else:
         return render(request, 'serversmanage/view_running_jobs.html')
+
+
+def kill_running_jobs(request, server_id):
+    import subprocess
+    server = get_object_or_404(servers, pk=server_id)
+    id = server.id
+    ip = server.ip
+    ssh = subprocess.Popen(
+        ["for i in {1..5}; do for process in $(ps aux | grep -v grep | grep %s | awk '{print $2}');"
+         " do kill -9 $process;done;done" % ip],
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+    return HttpResponseRedirect('/server/' + server_id)

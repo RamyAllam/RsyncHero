@@ -58,7 +58,7 @@
     <a href="{% url 'serversmanage:view_logs' servers.id %}" class="btn btn-info">View Logs</a>
     <a href="{% url 'serversmanage:test_ssh' servers.id %}" class="btn btn-success">Test SSH</a>
     <a href="{% url 'serversmanage:view_running_jobs' servers.id %}" class="btn btn-primary">View Running Jobs</a>
-
+    <a href="{% url 'serversmanage:kill_running_jobs' servers.id %}" class="btn btn-danger">Kill Running Jobs</a>
     <div align="center" class="">
         <a class="" href="javascript:history.back()">Go Back</a>
     </div>

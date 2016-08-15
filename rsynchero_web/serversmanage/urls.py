@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^server/(?P<server_id>[0-9]+)/view_logs/$', views.view_logs, name='view_logs'),
     url(r'^server/(?P<server_id>[0-9]+)/test_ssh/$', views.test_ssh, name='test_ssh'),
     url(r'^server/(?P<server_id>[0-9]+)/view_running_jobs/$', views.view_running_jobs, name='view_running_jobs'),
+    url(r'^server/(?P<server_id>[0-9]+)/kill_running_jobs/$', views.kill_running_jobs, name='kill_running_jobs'),
     url(r'^server/(?P<server_id>[0-9]+)/restore_backup.*$', views.restore_backup, name='restore_backup'),
     url(r'^server/(?P<server_id>[0-9]+)/disable/$', views.serverdisable, name='serverdisable'),
     url(r'^server/(?P<server_id>[0-9]+)/enable/$', views.serverenable, name='serverenable'),
