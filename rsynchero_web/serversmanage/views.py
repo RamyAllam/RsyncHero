@@ -201,14 +201,10 @@ def view_logs(request, server_id):
 
 def test_ssh(request, server_id):
     import subprocess
-    import os
-    import sys
     server = get_object_or_404(servers, pk=server_id)
     id = server.id
     ip = server.ip
     ssh_port = server.sshport
-    hostname = server.hostname
-    sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../"))
 
     # Test SSH connection and timeout after 10 seconds
     ssh = subprocess.Popen(
