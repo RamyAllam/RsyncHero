@@ -5,17 +5,19 @@
 # Note : Please DO NOT add more than one trailing slash to paths. Trailing slashes are optional
 BACKUPDIR = "/backup/servers/"
 BACKUPDIR_LOG = BACKUPDIR + 'logs'
-MYSQL = "/var/lib/mysql"
-PHPINI = "/usr/local/lib/php.ini"
-MYCNF = "/etc/my.cnf"
-APACHE_CONF = "/usr/local/apache/conf"
-PHPCONF = "/usr/local/apache/conf/php.conf"
-USER_DOMAINS = "/etc/userdomains"
-CSFCONF = "/etc/csf/csf.conf"
-HOMEDIR = "/home"
-cPanel_DAILY_BKP = "/backup/cpbackup/daily"
+
+# This variable declares the default paths to backup and fill in web console - Add server - form
+backuppaths_initial = '/home,' \
+                      '/usr/local/apache/conf,' \
+                      '/etc/userdomains,' \
+                      '/usr/local/apache/conf/php.conf,' \
+                      '/etc/csf/csf.conf,' \
+                      '/usr/local/lib/php.ini,' \
+                      '/etc/my.cnf,' \
+                      '/backup/cpbackup/daily,' \
+                      '/var/lib/mysql'
+
 RSYNC_EXCLUDE = "rsync_excl.txt"
-files_to_bkp = [APACHE_CONF, USER_DOMAINS, PHPCONF, CSFCONF, PHPINI, MYCNF, cPanel_DAILY_BKP, HOMEDIR, MYSQL]
 ##############################################################################
 
 # -- Integrity --
@@ -33,8 +35,14 @@ rsync_stdout = 1
 number_of_threads = 16
 
 # -- DataBase --
-sqlite_file = './rsynchero_web/db.sqlite3'
+sqlite_file_name = 'db.sqlite3'
 
+# DO NOT CHANGE #
+# This var is called outside django
+sqlite_file_path = './rsynchero_web/' + sqlite_file_name
+# This var is called from django
+sqlite_file_path_django = './' + sqlite_file_name
+# DO NOT CHANGE #
 ##############################################################################
 # -- Email --
 email_file = "email.txt"

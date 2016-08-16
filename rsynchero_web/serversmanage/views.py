@@ -64,6 +64,7 @@ def serverenable(request, server_id):
 def list_backup(request, server_id):
     import os
     import sys
+    import sqlite3
     server = get_object_or_404(servers, pk=server_id)
     id = server.id
     ip = server.ip
@@ -71,7 +72,31 @@ def list_backup(request, server_id):
     sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../"))
 
     # GET the configured dirs to backup from variable file
-    from vars import files_to_bkp, BACKUPDIR_LOG, BACKUPDIR
+    from vars import sqlite_file_path_django, BACKUPDIR_LOG, BACKUPDIR
+    conn = sqlite3.connect(sqlite_file_path_django, timeout=10)
+    c = conn.cursor()
+    c.execute("select backuppaths from serversmanage_servers where ip='%s';" % ip)
+
+    # ssh_port_rows = List
+    files_to_bkp_rows = c.fetchall()
+
+    # Final LIST to use
+    files_to_bkp = []
+
+    for item_in_list in files_to_bkp_rows:
+        # Iterating through ssh_port_rows will return a tuple
+        # AFTER LOOP : item_in_list = tuple
+        # Iterate through item_in_list tuple
+        for item_in_tuple in item_in_list:
+            # # AFTER LOOP : item_in_tuple = List
+            # Remove the blank values from item_in_tuple using filter
+            # files_to_bkp_pre type AFTER filter is object
+            # split is used to get separate values based on ,
+            files_to_bkp_pre = filter(None, item_in_tuple.split(','))
+
+            # Iterate through object
+            for i in files_to_bkp_pre:
+                files_to_bkp.append(i)
 
     # Check if Paths found on the backup server
     # Ex. short path = /home
