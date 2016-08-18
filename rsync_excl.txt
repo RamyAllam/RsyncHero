@@ -39,7 +39,8 @@ contents/cache/*
 data/cache/*
 homedir/logs/*
 logs/*.gz
-app/cache/dev/profiler/*
+app/cache/dev/*
+app/cache/prod/*
 app/logs/*
 tmp/webalizerftp/*
 tmp/webalizer/*
