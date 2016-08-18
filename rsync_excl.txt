@@ -47,6 +47,7 @@ tmp/webalizer/*
 tmp/awstats/*
 tmp/horde/*
 tmp/analog/*
+kloxo/httpd/awstats/dirdata/*
 .cagefs/tmp/*
 core/logs/system/*.txt
 logfiles/*.txt
