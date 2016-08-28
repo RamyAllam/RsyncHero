@@ -19,6 +19,7 @@ def validate_backuppaths(value):
 class servers(models.Model):
     hostname = models.CharField(max_length=1000)
     ip = models.GenericIPAddressField()
+    username = models.CharField(max_length=10, default='root')
     serverstatus = models.CharField(max_length=10, default='Enabled')
     backupstatus = models.CharField(max_length=200, null=True)
     lastbackup = models.DateTimeField(null=True)

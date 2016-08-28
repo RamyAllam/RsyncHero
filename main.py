@@ -30,10 +30,10 @@ def check_alive_hosts(ssh_cmd):
     conn = sqlite3.connect(sqlite_file_path, timeout=10)
     c = conn.cursor()
     c.execute("select ip from serversmanage_servers where serverstatus='Enabled';")
-    all_rows = c.fetchall()
+    ip_rows = c.fetchall()
 
     ip_list = []
-    for ip in all_rows:
+    for ip in ip_rows:
         ip_list.append(", ".join(ip))
 
     for server_ip in ip_list:
@@ -48,13 +48,18 @@ def check_alive_hosts(ssh_cmd):
     for server in hosts_ping_up_list:
         # GET SSH Port from database
         c.execute("select sshport from serversmanage_servers where ip='%s';" % server)
-        all_rows = c.fetchall()
+        ssh_rows = c.fetchall()
+        ssh_port = str(ssh_rows[0]).replace("(", "").replace(",)", "")
 
-        ssh_port = str(all_rows[0]).replace("(", "").replace(",)", "")
+        # GET Username from database
+        c.execute("select username from serversmanage_servers where ip='%s';" % server)
+        username_rows = c.fetchall()
+        username = str(username_rows[0]).replace("(", "").replace(",)", "").replace("'", "")
+
         # Check SSH Connection
         ssh = subprocess.Popen(
             ["ssh", '-p' '%s' % ssh_port, '-o', 'UserKnownHostsFile=/root/.ssh/known_hosts', '-o',
-             'StrictHostKeyChecking=no', '-o', 'BatchMode=yes', 'root@%s' % server, ssh_cmd],
+             'StrictHostKeyChecking=no', '-o', 'BatchMode=yes', '%s@%s' % (username, server), ssh_cmd],
             shell=False,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
@@ -82,15 +87,23 @@ def rsync_start(server_ip, rsync_stdout):
     c.execute("select hostname from serversmanage_servers where ip='%s';" % server_ip)
     hostname_rows = c.fetchall()
 
+    # GET Username from database
+    c.execute("select username from serversmanage_servers where ip='%s';" % server_ip)
+    username_rows = c.fetchall()
+    username = str(username_rows[0]).replace("(", "").replace(",)", "").replace("'", "")
+
     c.execute("select backuppaths from serversmanage_servers where ip='%s';" % server_ip)
-    # ssh_port_rows = List
+    # files_to_bkp_rows = List
+    # Data for files to backup are written like :
+    # [('/home,/etc/csf/csf.conf,/etc/php.ini,/etc/my.cnf',)]
+    # We need to iterate through these values and split them using , character
     files_to_bkp_rows = c.fetchall()
 
-    # Final LIST to use
+    # Final LIST to use, This list will be used for threading purposes in rsync functions
     files_to_bkp = []
 
     for item_in_list in files_to_bkp_rows:
-        # Iterating through ssh_port_rows will return a tuple
+        # Iterating through files_to_bkp_rows will return a tuple
         # AFTER LOOP : item_in_list = tuple
         # Iterate through item_in_list tuple
         for item_in_tuple in item_in_list:
@@ -113,12 +126,12 @@ def rsync_start(server_ip, rsync_stdout):
     def rsync_threaded(files_to_bkp):
         print("Start backup for : %s On %s" % (files_to_bkp, server_hostname))
         if rsync_stdout == 1:
-            start_backup = os.system("rsync -axSqR --delete --exclude-from=%s -e 'ssh -p %s' root@%s:%s %s"
-                                     % (RSYNC_EXCLUDE, ssh_port, server_ip, files_to_bkp, BKPDIR_HOSTNAME) + "/")
+            start_backup = os.system("rsync -axSqR --delete --exclude-from=%s -e 'ssh -p %s' %s@%s:%s %s"
+                                     % (RSYNC_EXCLUDE, ssh_port, username, server_ip, files_to_bkp, BKPDIR_HOSTNAME) + "/")
             print("Finished backup for : %s On %s" % (files_to_bkp, server_hostname))
         else:
-            start_backup = os.system("rsync -axSqR --delete --exclude-from=%s -e 'ssh -p %s' root@%s:%s %s"
-                                     % (RSYNC_EXCLUDE, ssh_port, server_ip, files_to_bkp, BKPDIR_HOSTNAME) + "/ ")
+            start_backup = os.system("rsync -axSqR --delete --exclude-from=%s -e 'ssh -p %s' %s@%s:%s %s"
+                                     % (RSYNC_EXCLUDE, ssh_port, username, server_ip, files_to_bkp, BKPDIR_HOSTNAME) + "/ ")
             print("Background process is running for : %s On %s" % (files_to_bkp, server_hostname))
 
         # Set backup status in the database

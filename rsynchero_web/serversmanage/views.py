@@ -119,13 +119,14 @@ def restore_backup(request, server_id):
     # GET values from database
     server = get_object_or_404(servers, pk=server_id)
     hostname = server.hostname
+    username = server.username
     ssh_port = server.sshport
     server_ip = server.ip
 
     # GET logged-in username
-    username = None
+    login_username = None
     if request.user.is_authenticated():
-        username = request.user.username
+        login_username = request.user.username
 
     # Parse the GET request from the form and get the required values
     if request.GET.get('restore_backup'):
@@ -157,8 +158,8 @@ def restore_backup(request, server_id):
         # Rsync for file should not contain a trailing slash
         # rsync -axSq /backup/servers/HOSTNAME/etc/php.ini -e 'ssh -p 22' 1.1.1.1:/etc/php.ini
         if os.path.isfile(dir_to_restore_local):
-            rsync_cmd = "rsync -axSq %s -e 'ssh -p %s' root@%s:%s 2>>%s &" \
-                        % (dir_to_restore_local, ssh_port, server_ip, dir_to_restore_remote, cmd_logs_errors)
+            rsync_cmd = "rsync -axSq %s -e 'ssh -p %s' %s@%s:%s 2>>%s &" \
+                        % (dir_to_restore_local, ssh_port, username, server_ip, dir_to_restore_remote, cmd_logs_errors)
 
             # Log action details
             with open(cmd_logs, "a") as myfile:
@@ -168,14 +169,14 @@ def restore_backup(request, server_id):
                              "\nIP : %s"
                              "\nCommand : %s"
                              "\nAction: RESTORE"
-                             "\nTime: %s" % (username, hostname, server_ip, rsync_cmd, time_now))
+                             "\nTime: %s" % (login_username, hostname, server_ip, rsync_cmd, time_now))
             restore = os.system(rsync_cmd)
 
         # To prevent against creating new folders Rsync command for dirs should contain a trailing /
         # rsync -axSq /backup/servers/HOSTNAME/home/ -e 'ssh -p 22' 1.1.1.1:/home/
         elif os.path.isdir(dir_to_restore_local):
-            rsync_cmd = "rsync -axSq %s/ -e 'ssh -p %s' root@%s:%s/ 2>>%s &" \
-                        % (dir_to_restore_local, ssh_port, server_ip, dir_to_restore_remote, cmd_logs_errors)
+            rsync_cmd = "rsync -axSq %s/ -e 'ssh -p %s' %s@%s:%s/ 2>>%s &" \
+                        % (dir_to_restore_local, ssh_port, username, server_ip, dir_to_restore_remote, cmd_logs_errors)
 
             # Log action details
             with open(cmd_logs, "a") as myfile:
@@ -185,7 +186,7 @@ def restore_backup(request, server_id):
                              "\nIP : %s"
                              "\nCommand : %s"
                              "\nAction: RESTORE"
-                             "\nTime: %s" % (username, hostname, server_ip, rsync_cmd, time_now))
+                             "\nTime: %s" % (login_username, hostname, server_ip, rsync_cmd, time_now))
             restore = os.system(rsync_cmd)
 
         # If there are no files or folders exist
@@ -198,7 +199,7 @@ def restore_backup(request, server_id):
                              "\nIP : %s"
                              "\nSource : %s"
                              "\nResults: Dir not found"
-                             "\nTime: %s" % (username, hostname, server_ip, dir_to_restore_local, time_now))
+                             "\nTime: %s" % (login_username, hostname, server_ip, dir_to_restore_local, time_now))
 
         return HttpResponseRedirect('/server/' + server_id + '/list_backup')
 
@@ -229,12 +230,13 @@ def test_ssh(request, server_id):
     server = get_object_or_404(servers, pk=server_id)
     id = server.id
     ip = server.ip
+    username = server.username
     ssh_port = server.sshport
 
     # Test SSH connection and timeout after 10 seconds
     ssh = subprocess.Popen(
         ["ssh", '-p' '%s' % ssh_port, '-o', 'ConnectTimeout=10', '-o', 'UserKnownHostsFile=/root/.ssh/known_hosts', '-o',
-         'StrictHostKeyChecking=no', '-o', 'BatchMode=yes', 'root@%s' % ip, 'echo "Hi, I am still alive :)"'],
+         'StrictHostKeyChecking=no', '-o', 'BatchMode=yes', '%s@%s' % (username, ip), 'echo "Hi, I am still alive :)"'],
         shell=False,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE)
