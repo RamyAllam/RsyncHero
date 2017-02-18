@@ -3,9 +3,9 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 import sys
 import os
-
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../"))
 from vars import backuppaths_initial
+
 
 # Validation function for valid paths
 def validate_backuppaths(value):
@@ -17,8 +17,8 @@ def validate_backuppaths(value):
 
 
 class servers(models.Model):
-    hostname = models.CharField(max_length=1000)
-    ip = models.GenericIPAddressField()
+    hostname = models.CharField(unique=True, error_messages={'unique': "Hostname already exist."}, max_length=1000)
+    ip = models.GenericIPAddressField(unique=True, error_messages={'unique': "IP already exist."})
     username = models.CharField(max_length=10, default='root')
     serverstatus = models.CharField(max_length=10, default='Enabled')
     backupstatus = models.CharField(max_length=200, null=True)
